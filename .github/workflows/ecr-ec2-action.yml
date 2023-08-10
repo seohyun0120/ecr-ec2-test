@@ -29,6 +29,12 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Debug ECR_REGISTRY
+      run: echo $ECR_REGISTRY
+    
+    - name: Debug ECR_REPOSITORY
+      run: echo $ECR_REPOSITORY
     
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
@@ -43,4 +49,4 @@ jobs:
       run: |
         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY
