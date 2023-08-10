@@ -10,6 +10,7 @@ env:
   AWS_REGION: ap-northeast-2
   ECR_REGISTRY: 448066611421.dkr.ecr.ap-northeast-2.amazonaws.com
   ECR_REPOSITORY: seohyun-test
+  CONTAINER_NAME: seohyun-server
 
 jobs:
   build:
@@ -46,4 +47,12 @@ jobs:
       run: |
         aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
         docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
-        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY
+
+    - name: Stop and Remove Existing Container
+      run: |
+        docker stop $CONTAINER_NAME || true
+        docker rm $CONTAINER_NAME || true
+  
+    - name: Start New Container with Updated Image
+      run: |
+        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 --name $CONTAINER_NAME $ECR_REGISTRY/$ECR_REPOSITORY:latest
