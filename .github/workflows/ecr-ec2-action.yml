@@ -37,7 +37,10 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+  deploy:
+    runs-on: ubuntu-latest
 
+    steps:
     - name: Stop and Remove Existing Container
       run: |
         docker stop $(docker ps -q) || true
