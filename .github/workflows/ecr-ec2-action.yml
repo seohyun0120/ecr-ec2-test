@@ -34,8 +34,15 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
+    - name: Pull and run Docker image on EC2
+      id: deploy-to-ec2
+      run: |
+        ECR_REGISTRY=${{ steps.build-image.outputs.image }}
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
+        docker pull $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+        docker run -d --name your-container-name -p 3000:3000 $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
