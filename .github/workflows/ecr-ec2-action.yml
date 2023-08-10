@@ -44,6 +44,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
+    - name: Echo Image Name
+      run: |
+        echo "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
     - name: Pull and run Docker image on EC2
       id: deploy-to-ec2
       run: |
