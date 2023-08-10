@@ -45,7 +45,10 @@ jobs:
         username: ec2-user
         key: ${{ secrets.SSH_EC2_SECRET_KEY }}
         script: |
-          docker stop $(docker ps -q) || true
-          docker rm $(docker ps -q) || true
+          for container_id in $(docker ps -q); do
+            docker stop $container_id
+            docker rm $container_id
+          done
+
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY:latest
