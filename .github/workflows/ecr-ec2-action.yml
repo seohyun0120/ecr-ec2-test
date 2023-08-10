@@ -42,7 +42,6 @@ jobs:
     - name: Pull and run Docker image on EC2
       id: deploy-to-ec2
       run: |
-        ECR_REGISTRY="${{ steps.build-image.outputs.image }}" | trim
-        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
-        docker pull $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
-        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+        aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+        docker pull ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+        docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
