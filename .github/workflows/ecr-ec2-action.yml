@@ -29,12 +29,6 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Debug ECR_REGISTRY
-      run: echo $ECR_REGISTRY
-    
-    - name: Debug ECR_REPOSITORY
-      run: echo $ECR_REPOSITORY
     
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
