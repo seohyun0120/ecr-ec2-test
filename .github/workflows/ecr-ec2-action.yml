@@ -42,7 +42,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: 43.201.72.173
-        username: seohyun-test
+        username: ec2-user
         key: ${{ secrets.SSH_EC2_SECRET_KEY }}
         script: |
           docker stop $(docker ps -q) || true
