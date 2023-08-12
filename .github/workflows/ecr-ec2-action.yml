@@ -38,18 +38,25 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
     
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: 43.201.72.173
-        username: ec2-user
-        key: ${{ secrets.SSH_EC2_SECRET_KEY }}
-        script: |
-          for container_id in $(docker ps -q); do
-            docker stop $container_id
-            docker rm $container_id
-          done
+    - name: SSH into EC2 and deploy
+      env:
+        EC2_HOST: 43.201.72.173
+        EC2_USER: ec2-user
+      run: |
+        ssh -i $SSH_EC2_SECRET_KEY $EC2_USER@$EC2_HOST "docker stop $(docker ps -q) && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest && docker run -d -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
-          image_reference="$ECR_REGISTRY/$ECR_REPOSITORY:latest"
-          docker pull $image_reference
-          docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $image_reference
+    # - name: Deploy to EC2
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: 43.201.72.173
+    #     username: ec2-user
+    #     key: ${{ secrets.SSH_EC2_SECRET_KEY }}
+    #     script: |
+    #       for container_id in $(docker ps -q); do
+    #         docker stop $container_id
+    #         docker rm $container_id
+    #       done
+
+    #       image_reference="$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+    #       docker pull $image_reference
+    #       docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 $image_reference
