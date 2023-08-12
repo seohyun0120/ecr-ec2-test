@@ -50,5 +50,6 @@ jobs:
             docker rm $container_id
           done
 
-          docker pull '$ECR_REGISTRY/$ECR_REPOSITORY:latest'
-          docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 '$ECR_REGISTRY/$ECR_REPOSITORY:latest'
+          image_reference="$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+          docker pull "$image_reference"
+          docker run -d -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul -p 3000:3000 "$image_reference"
