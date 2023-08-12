@@ -42,8 +42,11 @@ jobs:
       env:
         EC2_HOST: 43.201.72.173
         EC2_USER: ec2-user
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_EC2_SECRET_KEY }}
       run: |
-        ssh -i $SSH_EC2_SECRET_KEY $EC2_USER@$EC2_HOST "docker stop $(docker ps -q) && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest && docker run -d -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY:latest"
+        echo "$SSH_PRIVATE_KEY' > temp.pem
+        chmod 600 temp.pem
+        ssh -i temp.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $EC2_USER@$EC2_HOST "docker stop $(docker ps -q) && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest && docker run -d -p 3000:3000 $ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
     # - name: Deploy to EC2
     #   uses: appleboy/ssh-action@master
